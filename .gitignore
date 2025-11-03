@@ -1,0 +1,28 @@
+.venv/
+venv/
+__pycache__/
+.ipynb_checkpoints/
+.mypy_cache/
+.pytest_cache/
+*.pyc
+
+# Data artifacts
+data/raw/
+data/processed/*.parquet
+data/processed/*.feather
+data/processed/*.pkl
+data/processed/*.json
+data/cache/
+
+# Large checkpoints
+models/
+outputs/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
