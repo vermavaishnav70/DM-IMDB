@@ -46,9 +46,8 @@ def prepare_features(df):
     # Extract decade
     df_model['decade'] = (df_model['startYear'] // 10) * 10
     
-    # Count number of genres
-    df_model['num_genres'] = df_model['genres'].str.count(',') + 1
-    df_model['num_genres'] = df_model['num_genres'].fillna(1)
+    # Count number of genres (handle NaN values first)
+    df_model['num_genres'] = df_model['genres'].fillna('Unknown').str.count(',') + 1
     
     # Extract primary genre (first genre in the list)
     df_model['primary_genre'] = df_model['genres'].str.split(',').str[0]

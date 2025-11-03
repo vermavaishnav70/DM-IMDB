@@ -19,6 +19,19 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from pathlib import Path
 
+def truncate_title(title, max_length=30):
+    """
+    Truncate a title to a maximum length.
+    
+    Args:
+        title (str): Title to truncate
+        max_length (int): Maximum length
+        
+    Returns:
+        str: Truncated title with ellipsis if needed
+    """
+    return f"{title[:max_length]}..." if len(title) > max_length else title
+
 def load_data(data_dir='data'):
     """Load the preprocessed merged dataset."""
     filepath = os.path.join(data_dir, 'merged_imdb_data.csv')
@@ -109,8 +122,7 @@ def visualize_top_movies_by_director(df, name_basics_path='data/name_basics.tsv'
         
         fig.add_trace(go.Bar(
             name=director,
-            x=[f"{row['Title'][:30]}..." if len(row['Title']) > 30 else row['Title'] 
-               for _, row in director_data.iterrows()],
+            x=[truncate_title(row['Title'], 30) for _, row in director_data.iterrows()],
             y=director_data['Rating'],
             text=director_data['Rating'].round(2),
             textposition='auto',
@@ -324,8 +336,7 @@ def visualize_top_rated_titles(df, output_dir='plots', top_n=20):
     fig = go.Figure(data=[
         go.Bar(
             x=top_titles['averageRating'],
-            y=[f"{title[:40]}..." if len(title) > 40 else title 
-               for title in top_titles['primaryTitle']],
+            y=[truncate_title(title, 40) for title in top_titles['primaryTitle']],
             orientation='h',
             marker_color='gold',
             text=top_titles['averageRating'].round(2),

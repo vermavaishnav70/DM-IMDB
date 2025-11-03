@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
+from utils import categorize_runtime
 
 # Set style for better-looking plots
 sns.set_style("whitegrid")
@@ -152,11 +153,7 @@ def analyze_runtime_correlations(df):
     
     # Optimal runtime for high ratings
     print("\nAverage rating by runtime categories:")
-    df['runtime_category'] = pd.cut(df['runtimeMinutes'], 
-                                     bins=[0, 60, 90, 120, 150, 500],
-                                     labels=['Short (<60)', 'Standard (60-90)', 
-                                            'Long (90-120)', 'Very Long (120-150)', 
-                                            'Epic (>150)'])
+    df['runtime_category'] = categorize_runtime(df['runtimeMinutes'])
     runtime_cat_ratings = df.groupby('runtime_category')['averageRating'].agg(['mean', 'median', 'count'])
     print(runtime_cat_ratings)
     
