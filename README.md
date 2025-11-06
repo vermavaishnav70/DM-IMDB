@@ -3,7 +3,7 @@ Project Title
 Mining IMDb for Movie Trends
 
 
-Project Overview
+Overview
 
 The global film industry produces thousands of movies each year across genres, languages, and production scales. This project aims to analyze and mine IMDb data to uncover meaningful patterns, correlations, and insights about movie performance. The study combines descriptive analytics, predictive modeling, and interactive visualization to understand the factors that influence a movie’s success.
 
@@ -24,8 +24,6 @@ Dataset Information
 
 Source: IMDb Non-Commercial Datasets ([https://developer.imdb.com/non-commercial-datasets/](https://developer.imdb.com/non-commercial-datasets/))
 
-Primary Files Used:
-
 * title.basics.tsv.gz: Contains title type, movie name, genres, release year, and runtime
 * title.ratings.tsv.gz: Contains IMDb ratings and vote counts
 * title.crew.tsv.gz: Includes directors and writers
@@ -39,9 +37,13 @@ Primary Files Used:
 Hypotheses
 
 H1: High-budget films tend to receive higher ratings only up to a threshold, after which returns diminish.
+
 H2: Directors with consistent average ratings maintain stronger audience trust.
+
 H3: Longer movies (over 150 minutes) tend to receive higher critic ratings but lower audience popularity.
+
 H4: Regional cinema (for example, India or Korea) has achieved higher global IMDb ratings since 2015.
+
 H5: Multi-genre movies perform better commercially but receive lower critical ratings.
 
 
