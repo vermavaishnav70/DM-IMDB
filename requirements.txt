@@ -1,0 +1,8 @@
+requests
+tqdm
+pandas
+numpy
+matplotlib
+seaborn
+scipy
+ipykernel
