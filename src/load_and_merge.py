@@ -54,7 +54,12 @@ def load_and_merge(
     drop_missing_genres: bool = False,
     title_types: Optional[list] = None,
 ) -> pd.DataFrame:
-    """Load basics + ratings, filter, convert types, merge, and save outputs."""
+    """Load basics + ratings, filter, convert types, and merge.
+
+    NOTE: This function now ONLY returns the merged dataframe; saving is
+    performed later after optional enrichment steps so that the final
+    output includes directors/actors if requested.
+    """
     basics = read_tsv_gz(basics_path, nrows=nrows)
     print(f"Basics raw shape: {basics.shape}")
 
@@ -110,17 +115,6 @@ def load_and_merge(
         merged["decade"] = merged["decade"].fillna(-1).astype(int)
     else:
         merged["decade"] = -1
-
-    # Ensure output dirs exist
-    ensure_dir_for_file(out_path)
-    merged.to_csv(out_path, index=False)
-    print(f"Saved merged cleaned dataset to: {out_path}  (rows={len(merged)})")
-
-    # Save sample (first N rows) if requested
-    if sample_path:
-        ensure_dir_for_file(sample_path)
-        merged.head(5000).to_csv(sample_path, index=False)
-        print(f"Saved sample (first 5000 rows) to: {sample_path}")
 
     return merged
 
@@ -219,6 +213,29 @@ def main(argv=None):
             nrows=args.nrows,
             top_k=args.top_actors,
         )
+
+    # Combine directors and actors into one convenience column if available
+    if "directors" in merged.columns or "top_actors" in merged.columns:
+        dir_series = merged.get("directors", pd.Series([None]*len(merged)))
+        act_series = merged.get("top_actors", pd.Series([None]*len(merged)))
+        def _combine(d, a):
+            parts = []
+            if pd.notna(d) and d:
+                parts.append(str(d))
+            if pd.notna(a) and a:
+                parts.append(str(a))
+            return ",".join(parts) if parts else None
+        merged["directors_and_actors"] = [ _combine(d, a) for d, a in zip(dir_series, act_series) ]
+        print("Added combined column 'directors_and_actors'.")
+
+    # Save final enriched dataset and sample
+    ensure_dir_for_file(args.out)
+    merged.to_csv(args.out, index=False)
+    print(f"Saved final dataset (rows={len(merged)}) with columns: {merged.columns.tolist()} -> {args.out}")
+    if args.sample:
+        ensure_dir_for_file(args.sample)
+        merged.head(5000).to_csv(args.sample, index=False)
+        print(f"Saved sample (first 5000 rows) to: {args.sample}")
 
     print("Final dataframe shape:", merged.shape)
     print("Columns:", merged.columns.tolist())

@@ -6,3 +6,5 @@ matplotlib
 seaborn
 scipy
 ipykernel
+scikit-learn
+xgboost

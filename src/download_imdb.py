@@ -9,6 +9,7 @@ DOWNLOAD_LIST = {
     "title.crew.tsv.gz": "https://datasets.imdbws.com/title.crew.tsv.gz",
     "title.principals.tsv.gz": "https://datasets.imdbws.com/title.principals.tsv.gz",
     "title.akas.tsv.gz": "https://datasets.imdbws.com/title.akas.tsv.gz",
+    "name.basics.tsv.gz": "https://datasets.imdbws.com/name.basics.tsv.gz",
 }
 
 RAW_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "raw")
