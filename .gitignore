@@ -1,0 +1,6 @@
+data
+venv
+report
+.vscode
+*.pyc
+__pycache__
