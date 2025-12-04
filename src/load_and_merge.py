@@ -165,6 +165,40 @@ def enrich_with_principals(merged: pd.DataFrame, principals_path: str, nrows: Op
     return enriched
 
 
+def enrich_with_tmdb(merged: pd.DataFrame, tmdb_path: str, nrows: Optional[int] = None) -> pd.DataFrame:
+    """Attach revenue and budget from TMDB dataset."""
+    if not os.path.exists(tmdb_path):
+        print(f"Warning: TMDB file not found: {tmdb_path}. Skipping TMDB enrichment.")
+        return merged
+
+    print(f"Reading TMDB data from {tmdb_path} ...")
+    # TMDB csv has headers: id, title, ..., revenue, budget, imdb_id, ...
+    # We only need imdb_id, revenue, budget
+    try:
+        tmdb = pd.read_csv(
+            tmdb_path,
+            usecols=["imdb_id", "revenue", "budget","director"],
+            nrows=nrows,
+            dtype={"revenue": float, "budget": float, "imdb_id": str}
+        )
+    except ValueError as e:
+        print(f"Error reading TMDB file: {e}. Skipping TMDB enrichment.")
+        return merged
+
+    # Drop rows without imdb_id
+    tmdb = tmdb.dropna(subset=["imdb_id"])
+    
+    # Merge on tconst (IMDb) == imdb_id (TMDB)
+    # Note: merged dataframe has 'tconst'
+    enriched = merged.merge(tmdb, left_on="tconst", right_on="imdb_id", how="left")
+    
+    # Drop the redundant imdb_id column from TMDB
+    enriched = enriched.drop(columns=["imdb_id"])
+    
+    print(f"Enriched with TMDB data (revenue, budget). Shape: {enriched.shape}")
+    return enriched
+
+
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description="Load, merge, preview IMDb datasets (basics + ratings) and optionally enrich")
     p.add_argument("--basics", default="data/raw/title.basics.tsv.gz", help="Path to title.basics.tsv.gz")
@@ -178,6 +212,8 @@ def parse_args(argv=None):
     p.add_argument("--include-principals", action="store_true", help="Include title.principals enrichment (top actors)")
     p.add_argument("--principals-path", default="data/raw/title.principals.tsv.gz", help="Path to title.principals.tsv.gz")
     p.add_argument("--top-actors", type=int, default=3, help="Number of top actors to extract per movie")
+    p.add_argument("--include-tmdb", action="store_true", help="Include TMDB enrichment (revenue/budget)")
+    p.add_argument("--tmdb-path", default="data/raw/TMDB All Movies Dataset.csv", help="Path to TMDB dataset")
     p.add_argument("--title-types", default="movie", help="Comma-separated list of titleType to keep, e.g. 'movie,tvMovie'")
     return p.parse_args(argv)
 
@@ -214,6 +250,13 @@ def main(argv=None):
             top_k=args.top_actors,
         )
 
+    if args.include_tmdb:
+        merged = enrich_with_tmdb(
+            merged,
+            tmdb_path=args.tmdb_path,
+            nrows=args.nrows,
+        )
+
     # Combine directors and actors into one convenience column if available
     if "directors" in merged.columns or "top_actors" in merged.columns:
         dir_series = merged.get("directors", pd.Series([None]*len(merged)))
@@ -243,4 +286,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    main(argv=sys.argv[1:] + ["--include-tmdb"] )
