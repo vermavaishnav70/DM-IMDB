@@ -213,7 +213,7 @@ def parse_args(argv=None):
     p.add_argument("--principals-path", default="data/raw/title.principals.tsv.gz", help="Path to title.principals.tsv.gz")
     p.add_argument("--top-actors", type=int, default=3, help="Number of top actors to extract per movie")
     p.add_argument("--include-tmdb", action="store_true", help="Include TMDB enrichment (revenue/budget)")
-    p.add_argument("--tmdb-path", default="data/raw/TMDB All Movies Dataset.csv", help="Path to TMDB dataset")
+    p.add_argument("--tmdb-path", default="data/raw/TMDB_all_movies.csv", help="Path to TMDB dataset")
     p.add_argument("--title-types", default="movie", help="Comma-separated list of titleType to keep, e.g. 'movie,tvMovie'")
     return p.parse_args(argv)
 
