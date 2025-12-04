@@ -7,3 +7,5 @@ seaborn
 scipy
 ipykernel
 scikit-learn
+kaggle
+kagglehub
