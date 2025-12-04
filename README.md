@@ -1,4 +1,3 @@
-
 Project Title
 Mining IMDb for Movie Trends
 
